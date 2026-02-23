@@ -15,9 +15,18 @@ export default function VideoCard({ video, forceFavorite = false, onRemoveFavori
   const navigation = useNavigation();
 
   const normalizedVideoId = String(video?.videoId || "").match(/[\w-]{11}/)?.[0] || "";
+  const thumbnailFromVideoId = normalizedVideoId
+    ? `https://i.ytimg.com/vi/${normalizedVideoId}/hqdefault.jpg`
+    : "";
+  const storedThumbnail = video?.thumbnail;
+  const hasValidStoredThumbnail =
+    !!storedThumbnail &&
+    !String(storedThumbnail).includes("undefined") &&
+    !String(storedThumbnail).includes("null");
+
   const thumbnailUri =
-    video?.thumbnail ||
-    (normalizedVideoId ? `https://img.youtube.com/vi/${normalizedVideoId}/hqdefault.jpg` : "") ||
+    (hasValidStoredThumbnail ? storedThumbnail : "") ||
+    thumbnailFromVideoId ||
     getYouTubeThumbnail(video?.url);
 
   useEffect(() => {

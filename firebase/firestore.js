@@ -103,6 +103,21 @@ export async function getLists() {
   return await getUserLists();
 }
 
+export async function deleteList(listId) {
+  const uid = auth.currentUser.uid;
+
+  const videosRef = collection(db, "users", uid, "lists", listId, "videos");
+  const videosSnapshot = await getDocs(videosRef);
+
+  await Promise.all(
+    videosSnapshot.docs.map((videoDoc) =>
+      deleteDoc(doc(db, "users", uid, "lists", listId, "videos", videoDoc.id))
+    )
+  );
+
+  await deleteDoc(doc(db, "users", uid, "lists", listId));
+}
+
 /* ---------------- VIDEOS IN LIST ---------------- */
 
 export async function addVideoToList(listId, video) {
@@ -169,5 +184,5 @@ export function extractYouTubeID(url = "") {
 export function getYouTubeThumbnail(url = "") {
   const videoId = extractYouTubeID(url);
   if (!videoId) return "";
-  return `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+  return `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`;
 }
