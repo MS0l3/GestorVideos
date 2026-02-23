@@ -7,6 +7,19 @@ import styles from "../styles/homeStyles";
 import { isFavorite, toggleFavorite, getUserLists, addVideoToList, getYouTubeThumbnail } from "../firebase/firestore";
 import AddToListModal from "./AddToListModal";
 
+function formatInsertionDate(createdAt) {
+  const date = createdAt?.toDate?.() || null;
+  if (!date) return "Fecha no disponible";
+
+  return new Intl.DateTimeFormat("es-ES", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(date);
+}
+
 export default function VideoCard({ video, forceFavorite = false, onRemoveFavorite, showDelete = false, onDelete }) {
   const [favorite, setFavorite] = useState(false);
   const [lists, setLists] = useState([]);
@@ -100,6 +113,7 @@ export default function VideoCard({ video, forceFavorite = false, onRemoveFavori
           }}
         />
         <Text style={styles.cardTitle}>{video.title}</Text>
+        <Text style={styles.cardDate}>{formatInsertionDate(video.createdAt)}</Text>
       </TouchableOpacity>
 
       {/* Modal para añadir a lista */}

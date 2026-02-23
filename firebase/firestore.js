@@ -15,6 +15,15 @@ import { auth, db } from "./firebaseConfig";
 
 /* ---------------- FAVORITES ---------------- */
 
+function sortByCreatedAtDesc(items = []) {
+  return [...items].sort((a, b) => {
+    const aMillis = a?.createdAt?.toMillis?.() || 0;
+    const bMillis = b?.createdAt?.toMillis?.() || 0;
+    return bMillis - aMillis;
+  });
+}
+
+
 export async function getFavorites() {
   const uid = auth.currentUser.uid;
 
@@ -25,10 +34,12 @@ export async function getFavorites() {
 
   const snapshot = await getDocs(q);
 
-  return snapshot.docs.map((doc) => ({
+  const favorites = snapshot.docs.map((doc) => ({
     id: doc.id,
     ...doc.data(),
   }));
+
+  return sortByCreatedAtDesc(favorites);
 }
 
 export async function addFavoriteVideo(title, url) {
@@ -164,10 +175,12 @@ export async function getVideosFromList(listId) {
 
   const snapshot = await getDocs(q);
 
-  return snapshot.docs.map((doc) => ({
+  const videos = snapshot.docs.map((doc) => ({
     id: doc.id,
     ...doc.data(),
   }));
+
+  return sortByCreatedAtDesc(videos);
 }
 
 // Añade esta función al final de tu firestore.js
