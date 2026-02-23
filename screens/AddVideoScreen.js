@@ -15,18 +15,27 @@ import {
   createList,
   addVideoToList,
   addFavorite,
+  extractYouTubeID,
+  getYouTubeThumbnail,
 } from "../firebase/firestore";
 
-export default function AddVideoScreen({ navigation }) {
+export default function AddVideoScreen({ navigation, route }) {
   const [title, setTitle] = useState("");
   const [url, setUrl] = useState("");
 
   const [lists, setLists] = useState([]);
-  const [selectedList, setSelectedList] = useState(null);
+  const preselectedListId = route?.params?.listId || null;
+  const [selectedList, setSelectedList] = useState(preselectedListId);
 
   useEffect(() => {
     loadLists();
   }, []);
+
+  useEffect(() => {
+    if (preselectedListId) {
+      setSelectedList(preselectedListId);
+    }
+  }, [preselectedListId]);
 
   const loadLists = async () => {
     const data = await getLists();
@@ -47,13 +56,18 @@ export default function AddVideoScreen({ navigation }) {
       Alert.alert("Error", "Rellena todos los campos");
       return;
     }
-    const videoId = url.split("v=")[1];
+    const videoId = extractYouTubeID(url);
+
+    if (!videoId) {
+      Alert.alert("Error", "URL de YouTube no válida");
+      return;
+    }
 
     const video = {
-    title,
-    url,
-    videoId,
-    thumbnail: `https://img.youtube.com/vi/${videoId}/0.jpg`,
+      title,
+      url,
+      videoId,
+      thumbnail: getYouTubeThumbnail(url),
     };
 
 
@@ -74,6 +88,12 @@ export default function AddVideoScreen({ navigation }) {
   return (
     <SafeAreaView style={styles.container}>
       <Text style={styles.title}>Añadir vídeo</Text>
+
+      {route?.params?.listName ? (
+        <Text style={{ color: "white", marginBottom: 10 }}>
+          Lista seleccionada: {route.params.listName}
+        </Text>
+      ) : null}
 
       <TextInput
         style={styles.input}

@@ -15,11 +15,18 @@ export default StyleSheet.create({
     marginBottom: 20,
   },
 
+  listItemRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 15,
+  },
+
   listItem: {
+    flex: 1,
     backgroundColor: '#6d4fa3',
     padding: 18,
     borderRadius: 14,
-    marginBottom: 15,
+    marginRight: 10,
   },
 
   listName: {
@@ -45,5 +52,14 @@ export default StyleSheet.create({
     fontWeight: '600',
     color: '#3b2a5a',
   },
-  
+
+  deleteButton: {
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    backgroundColor: "#d35b6d",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
 });

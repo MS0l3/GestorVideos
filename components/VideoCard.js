@@ -4,29 +4,63 @@ import { useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 
 import styles from "../styles/homeStyles";
-import { isFavorite, toggleFavorite, getUserLists, addVideoToList } from "../firebase/firestore";
+import { isFavorite, toggleFavorite, getUserLists, addVideoToList, getYouTubeThumbnail } from "../firebase/firestore";
 import AddToListModal from "./AddToListModal";
 
-export default function VideoCard({ video, forceFavorite = false, onRemoveFavorite }) {
+function formatInsertionDate(createdAt) {
+  const date = createdAt?.toDate?.() || null;
+  if (!date) return "Fecha no disponible";
+
+  return new Intl.DateTimeFormat("es-ES", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(date);
+}
+
+export default function VideoCard({ video, forceFavorite = false, onRemoveFavorite, showDelete = false, onDelete }) {
   const [favorite, setFavorite] = useState(false);
   const [lists, setLists] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
+  const [imageUri, setImageUri] = useState("");
 
   const navigation = useNavigation();
+
+  const normalizedVideoId = String(video?.videoId || "").match(/[\w-]{11}/)?.[0] || "";
+  const thumbnailFromVideoId = normalizedVideoId
+    ? `https://i.ytimg.com/vi/${normalizedVideoId}/hqdefault.jpg`
+    : "";
+  const storedThumbnail = video?.thumbnail;
+  const hasValidStoredThumbnail =
+    !!storedThumbnail &&
+    !String(storedThumbnail).includes("undefined") &&
+    !String(storedThumbnail).includes("null");
+
+  const thumbnailUri =
+    (hasValidStoredThumbnail ? storedThumbnail : "") ||
+    thumbnailFromVideoId ||
+    getYouTubeThumbnail(video?.url);
+  const fallbackThumbnailUri = normalizedVideoId
+    ? `https://i.ytimg.com/vi/${normalizedVideoId}/mqdefault.jpg`
+    : "";
 
   useEffect(() => {
     if (!forceFavorite) checkFavorite();
     else setFavorite(true);
+
+    setImageUri(thumbnailUri);
 
     const loadLists = async () => {
       const data = await getUserLists();
       setLists(data);
     };
     loadLists();
-  }, []);
+  }, [thumbnailUri]);
 
   const checkFavorite = async () => {
-    const exists = await isFavorite(video.videoId);
+    const exists = await isFavorite(video);
     setFavorite(!!exists);
   };
 
@@ -41,8 +75,11 @@ export default function VideoCard({ video, forceFavorite = false, onRemoveFavori
 
   const handlePlay = () => {
     navigation.navigate("VideoPlayer", { video }); // <-- debe coincidir exactamente con Stack.Screen
-};
+  };
 
+  const handleDelete = () => {
+    if (onDelete) onDelete();
+  };
 
   return (
     <View style={styles.card}>
@@ -56,10 +93,27 @@ export default function VideoCard({ video, forceFavorite = false, onRemoveFavori
         <Ionicons name="add-circle-outline" size={22} color="#fff" />
       </TouchableOpacity>
 
+      {showDelete && (
+        <TouchableOpacity style={styles.deleteVideoIcon} onPress={handleDelete}>
+          <Ionicons name="trash-outline" size={20} color="#ff8a8a" />
+        </TouchableOpacity>
+      )}
+
       {/* Imagen y título */}
       <TouchableOpacity onPress={handlePlay}>
-        <Image source={{ uri: video.thumbnail }} style={styles.image} />
+        <Image
+          source={{ uri: imageUri }}
+          style={styles.image}
+          onError={() => {
+            if (imageUri && fallbackThumbnailUri && imageUri !== fallbackThumbnailUri) {
+              setImageUri(fallbackThumbnailUri);
+              return;
+            }
+            setImageUri("");
+          }}
+        />
         <Text style={styles.cardTitle}>{video.title}</Text>
+        <Text style={styles.cardDate}>{formatInsertionDate(video.createdAt)}</Text>
       </TouchableOpacity>
 
       {/* Modal para añadir a lista */}

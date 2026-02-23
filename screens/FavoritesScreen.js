@@ -1,5 +1,7 @@
-import { useEffect, useState } from "react";
-import { Text, FlatList, SafeAreaView, View, TouchableOpacity, Ionicons } from "react-native";
+import { useCallback, useEffect, useState } from "react";
+import { Text, FlatList, SafeAreaView, View, TouchableOpacity } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import { useFocusEffect } from "@react-navigation/native";
 import VideoCard from "../components/VideoCard";
 import styles from "../styles/homeStyles";
 import { getFavorites, removeFavoriteByVideoId } from "../firebase/firestore";
@@ -10,6 +12,12 @@ export default function FavoritesScreen({ navigation }) {
   useEffect(() => {
     loadFavorites();
   }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      loadFavorites();
+    }, [])
+  );
 
   const loadFavorites = async () => {
     const data = await getFavorites();
@@ -26,7 +34,7 @@ export default function FavoritesScreen({ navigation }) {
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
         <Text style={styles.title}>Favoritos</Text>
 
-        <TouchableOpacity onPress={() => navigation.navigate("AddVideo")}>
+        <TouchableOpacity onPress={() => navigation.navigate("AddFavorite")}>
           <Ionicons name="add-circle-outline" size={32} color="#fff" />
         </TouchableOpacity>
       </View>

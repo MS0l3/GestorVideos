@@ -36,6 +36,19 @@ export default StyleSheet.create({
     justifyContent: 'space-between',
   },
 
+  addListVideoButton: {
+    backgroundColor: "#e6e9ef",
+    paddingVertical: 10,
+    borderRadius: 12,
+    alignItems: "center",
+    marginBottom: 16,
+  },
+
+  addListVideoButtonText: {
+    color: "#3b2a5a",
+    fontWeight: "700",
+  },
+
   card: {
     width: CARD_WIDTH,
     marginBottom: 20,
@@ -83,6 +96,16 @@ export default StyleSheet.create({
     left: 8,
     zIndex: 10,
     backgroundColor: 'rgba(0,0,0,0.5)',
+    padding: 6,
+    borderRadius: 20,
+  },
+
+  deleteVideoIcon: {
+    position: "absolute",
+    top: 8,
+    right: 42,
+    zIndex: 10,
+    backgroundColor: "rgba(0,0,0,0.5)",
     padding: 6,
     borderRadius: 20,
   },
