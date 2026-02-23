@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Text, FlatList, SafeAreaView, View, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { useFocusEffect } from "@react-navigation/native";
 import VideoCard from "../components/VideoCard";
 import styles from "../styles/homeStyles";
 import { getFavorites, removeFavoriteByVideoId } from "../firebase/firestore";
@@ -11,6 +12,12 @@ export default function FavoritesScreen({ navigation }) {
   useEffect(() => {
     loadFavorites();
   }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      loadFavorites();
+    }, [])
+  );
 
   const loadFavorites = async () => {
     const data = await getFavorites();
