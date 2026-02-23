@@ -86,5 +86,15 @@ export default StyleSheet.create({
     padding: 6,
     borderRadius: 20,
   },
+
+  deleteVideoIcon: {
+    position: "absolute",
+    top: 8,
+    right: 42,
+    zIndex: 10,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    padding: 6,
+    borderRadius: 20,
+  },
     
 });

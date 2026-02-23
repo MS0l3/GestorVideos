@@ -7,7 +7,7 @@ import styles from "../styles/homeStyles";
 import { isFavorite, toggleFavorite, getUserLists, addVideoToList, getYouTubeThumbnail } from "../firebase/firestore";
 import AddToListModal from "./AddToListModal";
 
-export default function VideoCard({ video, forceFavorite = false, onRemoveFavorite }) {
+export default function VideoCard({ video, forceFavorite = false, onRemoveFavorite, showDelete = false, onDelete }) {
   const [favorite, setFavorite] = useState(false);
   const [lists, setLists] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
@@ -62,8 +62,11 @@ export default function VideoCard({ video, forceFavorite = false, onRemoveFavori
 
   const handlePlay = () => {
     navigation.navigate("VideoPlayer", { video }); // <-- debe coincidir exactamente con Stack.Screen
-};
+  };
 
+  const handleDelete = () => {
+    if (onDelete) onDelete();
+  };
 
   return (
     <View style={styles.card}>
@@ -76,6 +79,12 @@ export default function VideoCard({ video, forceFavorite = false, onRemoveFavori
       <TouchableOpacity style={styles.listIcon} onPress={() => setModalVisible(true)}>
         <Ionicons name="add-circle-outline" size={22} color="#fff" />
       </TouchableOpacity>
+
+      {showDelete && (
+        <TouchableOpacity style={styles.deleteVideoIcon} onPress={handleDelete}>
+          <Ionicons name="trash-outline" size={20} color="#ff8a8a" />
+        </TouchableOpacity>
+      )}
 
       {/* Imagen y título */}
       <TouchableOpacity onPress={handlePlay}>

@@ -149,6 +149,11 @@ export async function addVideoToList(listId, video) {
   });
 }
 
+export async function deleteVideoFromList(listId, videoDocId) {
+  const uid = auth.currentUser.uid;
+  await deleteDoc(doc(db, "users", uid, "lists", listId, "videos", videoDocId));
+}
+
 export async function getVideosFromList(listId) {
   const uid = auth.currentUser.uid;
 
