@@ -11,6 +11,7 @@ export default function VideoCard({ video, forceFavorite = false, onRemoveFavori
   const [favorite, setFavorite] = useState(false);
   const [lists, setLists] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
+  const [imageUri, setImageUri] = useState("");
 
   const navigation = useNavigation();
 
@@ -28,20 +29,25 @@ export default function VideoCard({ video, forceFavorite = false, onRemoveFavori
     (hasValidStoredThumbnail ? storedThumbnail : "") ||
     thumbnailFromVideoId ||
     getYouTubeThumbnail(video?.url);
+  const fallbackThumbnailUri = normalizedVideoId
+    ? `https://i.ytimg.com/vi/${normalizedVideoId}/mqdefault.jpg`
+    : "";
 
   useEffect(() => {
     if (!forceFavorite) checkFavorite();
     else setFavorite(true);
+
+    setImageUri(thumbnailUri);
 
     const loadLists = async () => {
       const data = await getUserLists();
       setLists(data);
     };
     loadLists();
-  }, []);
+  }, [thumbnailUri]);
 
   const checkFavorite = async () => {
-    const exists = await isFavorite(video.videoId);
+    const exists = await isFavorite(video);
     setFavorite(!!exists);
   };
 
@@ -73,7 +79,17 @@ export default function VideoCard({ video, forceFavorite = false, onRemoveFavori
 
       {/* Imagen y título */}
       <TouchableOpacity onPress={handlePlay}>
-        <Image source={{ uri: thumbnailUri }} style={styles.image} />
+        <Image
+          source={{ uri: imageUri }}
+          style={styles.image}
+          onError={() => {
+            if (imageUri && fallbackThumbnailUri && imageUri !== fallbackThumbnailUri) {
+              setImageUri(fallbackThumbnailUri);
+              return;
+            }
+            setImageUri("");
+          }}
+        />
         <Text style={styles.cardTitle}>{video.title}</Text>
       </TouchableOpacity>
 

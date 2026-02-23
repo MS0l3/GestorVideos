@@ -61,21 +61,38 @@ export async function removeFavoriteByVideoId(videoId) {
   });
 }
 export async function toggleFavorite(video) {
+  const targetVideoId = normalizeVideoId(video);
+  if (!targetVideoId) return false;
+
   const favorites = await getFavorites();
-  const exists = favorites.find((v) => v.videoId === video.videoId);
+  const exists = favorites.find((v) => normalizeVideoId(v) === targetVideoId);
 
   if (exists) {
-    await removeFavoriteByVideoId(video.videoId);
+    await removeFavoriteByVideoId(targetVideoId);
     return false;
-  } else {
-    await addFavoriteVideo(video.title, video.url);
-    return true;
   }
+
+  const payload = {
+    ...video,
+    videoId: targetVideoId,
+    url: resolveVideoUrl(video),
+    thumbnail: resolveThumbnail(video),
+  };
+
+  await addFavorite(payload);
+  return true;
 }
 
-export async function isFavorite(videoId) {
+export async function isFavorite(videoIdOrVideo) {
+  const targetVideoId =
+    typeof videoIdOrVideo === "string"
+      ? String(videoIdOrVideo).match(/[\w-]{11}/)?.[0] || ""
+      : normalizeVideoId(videoIdOrVideo);
+
+  if (!targetVideoId) return false;
+
   const favorites = await getFavorites();
-  return favorites.some((v) => v.videoId === videoId);
+  return favorites.some((v) => normalizeVideoId(v) === targetVideoId);
 }
 /* ---------------- LISTS ---------------- */
 
@@ -151,15 +168,44 @@ export async function getVideosFromList(listId) {
 // Añade esta función al final de tu firestore.js
 export async function addFavorite(video) {
   const uid = auth.currentUser.uid;
+  const videoId = normalizeVideoId(video);
+  const url = resolveVideoUrl(video);
+  const thumbnail = resolveThumbnail(video);
+
+  if (!videoId) {
+    throw new Error("Invalid video id");
+  }
 
   await addDoc(collection(db, "users", uid, "favorites"), {
     ...video,
+    videoId,
+    url,
+    thumbnail,
     createdAt: serverTimestamp(),
   });
 }
 
 
 /* ---------------- UTILS ---------------- */
+
+
+function normalizeVideoId(video = {}) {
+  const rawId = String(video?.videoId || "").match(/[\w-]{11}/)?.[0] || "";
+  return rawId || extractYouTubeID(video?.url || "");
+}
+
+function resolveVideoUrl(video = {}) {
+  if (video?.url) return video.url;
+  const id = normalizeVideoId(video);
+  return id ? `https://www.youtube.com/watch?v=${id}` : "";
+}
+
+function resolveThumbnail(video = {}) {
+  const current = String(video?.thumbnail || "");
+  if (current && !current.includes("undefined") && !current.includes("null")) return current;
+  const id = normalizeVideoId(video);
+  return id ? `https://i.ytimg.com/vi/${id}/hqdefault.jpg` : "";
+}
 
 export function extractYouTubeID(url = "") {
   const normalizedUrl = String(url).trim();
