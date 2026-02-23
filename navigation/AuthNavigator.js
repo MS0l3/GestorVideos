@@ -8,6 +8,7 @@ import PrivacyPolicyScreen from "../screens/PrivacyPolicyScreen";
 
 import FavoritesScreen from "../screens/FavoritesScreen";
 import AddFavoriteScreen from "../screens/AddFavoriteScreen";
+import AddVideoScreen from "../screens/AddVideoScreen";
 import MainTabs from "./MainTabs";
 
 import ListsScreen from "../screens/ListsScreen";
@@ -33,6 +34,7 @@ export default function AuthNavigator() {
         {/* Main */}
         <Stack.Screen name="Favorites" component={FavoritesScreen} />
         <Stack.Screen name="AddFavorite" component={AddFavoriteScreen} />
+        <Stack.Screen name="AddVideo" component={AddVideoScreen} />
 
         <Stack.Screen name="Lists" component={ListsScreen} />
         <Stack.Screen name="ListDetail" component={ListDetailScreen} />

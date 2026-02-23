@@ -19,16 +19,23 @@ import {
   getYouTubeThumbnail,
 } from "../firebase/firestore";
 
-export default function AddVideoScreen({ navigation }) {
+export default function AddVideoScreen({ navigation, route }) {
   const [title, setTitle] = useState("");
   const [url, setUrl] = useState("");
 
   const [lists, setLists] = useState([]);
-  const [selectedList, setSelectedList] = useState(null);
+  const preselectedListId = route?.params?.listId || null;
+  const [selectedList, setSelectedList] = useState(preselectedListId);
 
   useEffect(() => {
     loadLists();
   }, []);
+
+  useEffect(() => {
+    if (preselectedListId) {
+      setSelectedList(preselectedListId);
+    }
+  }, [preselectedListId]);
 
   const loadLists = async () => {
     const data = await getLists();
@@ -81,6 +88,12 @@ export default function AddVideoScreen({ navigation }) {
   return (
     <SafeAreaView style={styles.container}>
       <Text style={styles.title}>Añadir vídeo</Text>
+
+      {route?.params?.listName ? (
+        <Text style={{ color: "white", marginBottom: 10 }}>
+          Lista seleccionada: {route.params.listName}
+        </Text>
+      ) : null}
 
       <TextInput
         style={styles.input}

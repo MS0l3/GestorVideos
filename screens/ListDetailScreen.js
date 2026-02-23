@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
-import { View, Text, FlatList, Alert } from "react-native";
+import { useCallback, useEffect, useState } from "react";
+import { View, Text, FlatList, Alert, TouchableOpacity } from "react-native";
+import { useFocusEffect } from "@react-navigation/native";
 import VideoCard from "../components/VideoCard";
 import styles from "../styles/homeStyles";
 import { getVideosFromList, deleteVideoFromList } from "../firebase/firestore";
@@ -12,6 +13,12 @@ export default function ListDetailScreen({ route, navigation }) {
   useEffect(() => {
     loadVideos();
   }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      loadVideos();
+    }, [listId])
+  );
 
   const loadVideos = async () => {
     const data = await getVideosFromList(listId);
@@ -39,6 +46,18 @@ export default function ListDetailScreen({ route, navigation }) {
   return (
     <SafeAreaView style={styles.container}>
       <Text style={styles.title}>{listName}</Text>
+
+      <TouchableOpacity
+        style={styles.addListVideoButton}
+        onPress={() =>
+          navigation.navigate("AddVideo", {
+            listId,
+            listName,
+          })
+        }
+      >
+        <Text style={styles.addListVideoButtonText}>+ Añadir vídeo a esta lista</Text>
+      </TouchableOpacity>
 
       <FlatList
         data={videos}
