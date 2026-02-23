@@ -1,55 +1,41 @@
-# Prerequisites
-*.d
+# Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
 
-# Object files
-*.o
-*.ko
-*.obj
-*.elf
+# dependencies
+node_modules/
 
-# Linker output
-*.ilk
-*.map
-*.exp
+# Expo
+.expo/
+dist/
+web-build/
+expo-env.d.ts
 
-# Precompiled Headers
-*.gch
-*.pch
+# Native
+.kotlin/
+*.orig.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
 
-# Libraries
-*.lib
-*.a
-*.la
-*.lo
+# Metro
+.metro-health-check*
 
-# Shared objects (inc. Windows DLLs)
-*.dll
-*.so
-*.so.*
-*.dylib
+# debug
+npm-debug.*
+yarn-debug.*
+yarn-error.*
 
-# Executables
-*.exe
-*.out
-*.app
-*.i*86
-*.x86_64
-*.hex
+# macOS
+.DS_Store
+*.pem
 
-# Debug files
-*.dSYM/
-*.su
-*.idb
-*.pdb
+# local env files
+.env*.local
 
-# Kernel Module Compile Results
-*.mod*
-*.cmd
-.tmp_versions/
-modules.order
-Module.symvers
-Mkfile.old
-dkms.conf
+# typescript
+*.tsbuildinfo
 
-# debug information files
-*.dwo
+# generated native folders
+/ios
+/android
