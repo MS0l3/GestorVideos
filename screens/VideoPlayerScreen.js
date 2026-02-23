@@ -16,12 +16,19 @@ export default function VideoPlayerScreen({ route }) {
     );
   }
 
-  const embedUrl = `https://www.youtube.com/embed/${videoId}`;
+  const playbackUrl = `https://www.youtube.com/watch?v=${videoId}`;
 
   return (
     <View style={{ flex: 1, backgroundColor: "#5b3b8c" }}>
       <Text style={styles.title}>{video?.title || "Vídeo"}</Text>
-      <WebView source={{ uri: embedUrl }} style={{ flex: 1 }} />
+      <WebView
+        source={{ uri: playbackUrl }}
+        style={{ flex: 1 }}
+        javaScriptEnabled
+        domStorageEnabled
+        allowsInlineMediaPlayback
+        mediaPlaybackRequiresUserAction={false}
+      />
     </View>
   );
 }

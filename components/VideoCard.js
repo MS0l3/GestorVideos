@@ -14,6 +14,12 @@ export default function VideoCard({ video, forceFavorite = false, onRemoveFavori
 
   const navigation = useNavigation();
 
+  const normalizedVideoId = String(video?.videoId || "").match(/[\w-]{11}/)?.[0] || "";
+  const thumbnailUri =
+    video?.thumbnail ||
+    (normalizedVideoId ? `https://img.youtube.com/vi/${normalizedVideoId}/hqdefault.jpg` : "") ||
+    getYouTubeThumbnail(video?.url);
+
   useEffect(() => {
     if (!forceFavorite) checkFavorite();
     else setFavorite(true);
@@ -58,7 +64,7 @@ export default function VideoCard({ video, forceFavorite = false, onRemoveFavori
 
       {/* Imagen y título */}
       <TouchableOpacity onPress={handlePlay}>
-        <Image source={{ uri: video.thumbnail || getYouTubeThumbnail(video.url) }} style={styles.image} />
+        <Image source={{ uri: thumbnailUri }} style={styles.image} />
         <Text style={styles.cardTitle}>{video.title}</Text>
       </TouchableOpacity>
 
