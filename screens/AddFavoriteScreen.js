@@ -2,7 +2,7 @@ import { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, Alert } from "react-native";
 
 import styles from "../styles/authStyles";
-import { addFavoriteVideo } from "../firebase/firestore";
+import { addFavoriteVideo, extractYouTubeID } from "../firebase/firestore";
 
 export default function AddFavoriteScreen({ navigation }) {
   const [title, setTitle] = useState("");
@@ -11,6 +11,11 @@ export default function AddFavoriteScreen({ navigation }) {
   const handleAdd = async () => {
     if (!title || !url) {
       Alert.alert("Error", "Rellena todos los campos");
+      return;
+    }
+
+    if (!extractYouTubeID(url)) {
+      Alert.alert("Error", "URL de YouTube no válida");
       return;
     }
 

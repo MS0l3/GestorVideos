@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 
 import styles from "../styles/homeStyles";
-import { isFavorite, toggleFavorite, getUserLists, addVideoToList } from "../firebase/firestore";
+import { isFavorite, toggleFavorite, getUserLists, addVideoToList, getYouTubeThumbnail } from "../firebase/firestore";
 import AddToListModal from "./AddToListModal";
 
 export default function VideoCard({ video, forceFavorite = false, onRemoveFavorite }) {
@@ -58,7 +58,7 @@ export default function VideoCard({ video, forceFavorite = false, onRemoveFavori
 
       {/* Imagen y título */}
       <TouchableOpacity onPress={handlePlay}>
-        <Image source={{ uri: video.thumbnail }} style={styles.image} />
+        <Image source={{ uri: video.thumbnail || getYouTubeThumbnail(video.url) }} style={styles.image} />
         <Text style={styles.cardTitle}>{video.title}</Text>
       </TouchableOpacity>
 

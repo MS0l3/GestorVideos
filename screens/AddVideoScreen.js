@@ -15,6 +15,8 @@ import {
   createList,
   addVideoToList,
   addFavorite,
+  extractYouTubeID,
+  getYouTubeThumbnail,
 } from "../firebase/firestore";
 
 export default function AddVideoScreen({ navigation }) {
@@ -47,13 +49,18 @@ export default function AddVideoScreen({ navigation }) {
       Alert.alert("Error", "Rellena todos los campos");
       return;
     }
-    const videoId = url.split("v=")[1];
+    const videoId = extractYouTubeID(url);
+
+    if (!videoId) {
+      Alert.alert("Error", "URL de YouTube no válida");
+      return;
+    }
 
     const video = {
-    title,
-    url,
-    videoId,
-    thumbnail: `https://img.youtube.com/vi/${videoId}/0.jpg`,
+      title,
+      url,
+      videoId,
+      thumbnail: getYouTubeThumbnail(url),
     };
 
 

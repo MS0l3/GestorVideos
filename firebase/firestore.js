@@ -35,7 +35,7 @@ export async function addFavoriteVideo(title, url) {
   const uid = auth.currentUser.uid;
 
   const videoId = extractYouTubeID(url);
-  const thumbnail = `https://img.youtube.com/vi/${videoId}/0.jpg`;
+  const thumbnail = getYouTubeThumbnail(url);
 
   await addDoc(collection(db, "users", uid, "favorites"), {
     videoId,
@@ -146,6 +146,28 @@ export async function addFavorite(video) {
 
 /* ---------------- UTILS ---------------- */
 
-function extractYouTubeID(url) {
-  return url.split("v=")[1]?.substring(0, 11) || "";
+export function extractYouTubeID(url = "") {
+  const normalizedUrl = String(url).trim();
+  if (!normalizedUrl) return "";
+
+  const patterns = [
+    /(?:youtube\.com\/watch\?v=)([\w-]{11})/,
+    /(?:youtu\.be\/)([\w-]{11})/,
+    /(?:youtube\.com\/embed\/)([\w-]{11})/,
+    /(?:youtube\.com\/shorts\/)([\w-]{11})/,
+    /(?:youtube\.com\/live\/)([\w-]{11})/,
+  ];
+
+  for (const pattern of patterns) {
+    const match = normalizedUrl.match(pattern);
+    if (match?.[1]) return match[1];
+  }
+
+  return "";
+}
+
+export function getYouTubeThumbnail(url = "") {
+  const videoId = extractYouTubeID(url);
+  if (!videoId) return "";
+  return `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
 }
